@@ -2928,6 +2928,49 @@ html.native-shell .app-layout {
   margin-top: 2px;
 }
 
+/* Agent-authored note: accent left bar + tinted fill to stand apart from
+   human review notes, mirroring the `.is-active`/`.is-attention` modifier
+   convention used by the markdown annotation surfaces. */
+.orca-diff-comment-card.is-agent {
+  border-color: color-mix(in srgb, var(--primary) 28%, var(--border));
+  background: color-mix(in srgb, var(--primary) 4%, var(--background));
+}
+
+.dark .orca-diff-comment-card.is-agent {
+  border-color: color-mix(in srgb, var(--primary) 32%, var(--border));
+  background: color-mix(in srgb, var(--primary) 8%, var(--editor-surface));
+}
+
+.orca-diff-comment-agent-icon {
+  color: var(--primary);
+  flex-shrink: 0;
+}
+
+.orca-diff-comment-rationale {
+  margin-top: 2px;
+  padding: 8px 10px;
+  border-left: 2px solid color-mix(in srgb, var(--primary) 35%, transparent);
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--foreground) 3%, transparent);
+}
+
+.orca-diff-comment-rationale-label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--muted-foreground);
+  margin-bottom: 3px;
+}
+
+.orca-diff-comment-rationale-text {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--muted-foreground);
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
 /* Popover for adding new comment */
 .orca-diff-comment-popover {
   position: absolute;

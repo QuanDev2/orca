@@ -56,6 +56,24 @@
       ]
     },
     {
+      "name": "orca-diff-notes",
+      "sourcePath": "skills/orca-diff-notes",
+      "releaseRevision": 1,
+      "packageDigest": "ce23ba166d8b8fbe2bf48386d7022d6f593fd6c290bd0ecd91778f49a7e9cbe9",
+      "gitTreeSha": "f1d21df4b74e427e3aa17b176f6b063df918eb8a",
+      "files": [
+        {
+          "path": "SKILL.md",
+          "size": 1627,
+          "executable": false,
+          "classification": "text",
+          "exactSha256": "e3c2d997ddd57320a2cc764097fc96acd0825ffdfaa546512eb82886a02304b0",
+          "textNormalizedSha256": "e3c2d997ddd57320a2cc764097fc96acd0825ffdfaa546512eb82886a02304b0",
+          "identitySha256": "e3c2d997ddd57320a2cc764097fc96acd0825ffdfaa546512eb82886a02304b0"
+        }
+      ]
+    },
+    {
       "name": "orca-emulator",
       "sourcePath": "skills/orca-emulator",
       "releaseRevision": 7,
