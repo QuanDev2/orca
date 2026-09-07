@@ -354,9 +354,6 @@ export function DiffCommentCard({
         )}
         {!editing && rationale ? (
           <div className="orca-diff-comment-rationale">
-            <div className="orca-diff-comment-rationale-label">
-              {translate('auto.components.diff.comments.DiffCommentCard.rationale', 'Rationale')}
-            </div>
             <div className="orca-diff-comment-rationale-text">{rationale}</div>
           </div>
         ) : null}
