@@ -117,11 +117,11 @@ Out of scope (not triggered): OSC 52 TUI writes, agent-session copy commands, co
 ## Progress
 
 - [x] Scout herdr + Orca implementations
-- [x] Draft plan
-- [ ] Copy flash store + tests
-- [ ] Popup component + portals + tests
-- [ ] Wire both copy sites
-- [ ] i18n key
-- [ ] Typecheck / lint / test suites
-- [ ] App smoke + CDP visual proof
-- [ ] Plan progress recorded
+- [x] Draft plan (committed as 6abc431e03)
+- [x] Copy flash store + tests (`terminal-copy-flash-store.ts`, 7 tests)
+- [x] Popup component + portals + tests (`TerminalCopyFeedbackPopup.tsx`, `TerminalPaneRuntimePortals.tsx` `TerminalPaneCopyFeedbackPortals`, mounted in `TerminalPaneSurface.tsx`, 4 tests)
+- [x] Wire both copy sites (`terminal-pane-pane-links.ts` drag-quiet, `terminal-keyboard-action-dispatch.ts` immediate)
+- [x] i18n key `auto.components.terminal.pane.TerminalCopyFeedbackPopup.ab2ac75664` in en.json
+- [x] Typecheck (`pnpm tc:web` clean), oxlint clean, targeted suites: 55 tests green (7 store, 4 popup, 44 adjacent incl. copy-rejection, SSH overlay, session banner); `verify:localization-extraction` + `verify:localization-catalog` exit 0
+- [ ] App smoke — handed to user for manual testing (dev build launched)
+- [x] Plan progress recorded
