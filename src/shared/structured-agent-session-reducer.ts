@@ -5,6 +5,7 @@ import type {
 } from './agent-session-journal-types'
 import type {
   AgentSessionBackgroundTaskState,
+  AgentSessionSlashCommand,
   AgentSessionHandoffStatus,
   AgentSessionHistoryPage,
   AgentSessionSubscribeEvent,
@@ -22,6 +23,7 @@ export type StructuredAgentSessionState = {
   error?: string
   handoff: AgentSessionHandoffStatus | null
   backgroundTasks?: AgentSessionBackgroundTaskState | null
+  commands?: AgentSessionSlashCommand[] | null
   activity?: AgentSessionTurnActivity | null
 }
 
@@ -57,7 +59,8 @@ function backgroundTaskStatesEqual(
     !left ||
     !right ||
     left.state !== right.state ||
-    left.supportsTaskStop !== right.supportsTaskStop
+    left.supportsTaskStop !== right.supportsTaskStop ||
+    left.supportsStopAll !== right.supportsStopAll
   ) {
     return false
   }
@@ -186,6 +189,7 @@ export function reduceStructuredAgentSession(
       hasOlder: action.page.hasOlder,
       status: 'ready',
       handoff: state.handoff,
+      ...(sameEpoch ? { commands: state.commands } : {}),
       ...(sameEpoch && state.activity !== undefined ? { activity: state.activity } : {}),
       ...(action.page.backgroundTasks !== undefined
         ? { backgroundTasks: action.page.backgroundTasks }
@@ -210,13 +214,10 @@ export function reduceStructuredAgentSession(
     return state
   }
   if (event.type === 'snapshot' || event.type === 'reset') {
-    return replacePage(
-      event.page,
-      event.fence,
-      event.handoff,
-      event.backgroundTasks,
-      event.activity
-    )
+    return {
+      ...replacePage(event.page, event.fence, event.handoff, event.backgroundTasks, event.activity),
+      commands: event.commands
+    }
   }
   if (state.epoch !== event.batch.cursor.epoch) {
     return state
@@ -236,6 +237,7 @@ export function reduceStructuredAgentSession(
     journalUnchanged &&
     (event.fence === undefined || event.fence === state.fence) &&
     (event.handoff === undefined || event.handoff === state.handoff) &&
+    (event.commands === undefined || event.commands === state.commands) &&
     backgroundTaskStatesEqual(backgroundTasks, state.backgroundTasks) &&
     activity?.turnId === state.activity?.turnId &&
     activity?.text === state.activity?.text &&
@@ -257,6 +259,7 @@ export function reduceStructuredAgentSession(
     status: 'ready',
     error: undefined,
     handoff: event.handoff ?? state.handoff,
+    commands: event.commands !== undefined ? event.commands : state.commands,
     ...(backgroundTasks !== undefined ? { backgroundTasks } : {}),
     ...(activity !== undefined ? { activity } : {})
   }
