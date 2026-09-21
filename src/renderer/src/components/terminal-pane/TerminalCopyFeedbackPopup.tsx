@@ -1,18 +1,19 @@
 import type { Terminal } from '@xterm/xterm'
 import { translate } from '@/i18n/i18n'
 import { useTerminalCopyFlash } from './terminal-copy-flash-store'
+import type { TerminalLeafId } from '../../../../shared/stable-pane-id'
 
 type TerminalCopyFeedbackPopupProps = {
-  paneId: number
+  leafId: TerminalLeafId
   /** Live terminal whose theme supplies the ANSI green, like herdr's palette.green. */
   terminal: Pick<Terminal, 'options'>
 }
 
 export function TerminalCopyFeedbackPopup({
-  paneId,
+  leafId,
   terminal
 }: TerminalCopyFeedbackPopupProps): React.JSX.Element | null {
-  const visible = useTerminalCopyFlash(paneId)
+  const visible = useTerminalCopyFlash(leafId)
   if (!visible) {
     return null
   }

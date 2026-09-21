@@ -97,7 +97,7 @@ export function dispatchTerminalShortcutAction(
     })
       .then((copied) => {
         if (copied) {
-          notifyTerminalCopyFlash(pane.id)
+          notifyTerminalCopyFlash(pane.leafId)
         }
       })
       .catch(() => {})

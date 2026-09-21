@@ -170,7 +170,7 @@ export function installTerminalPaneLinkHandling(context: PaneLinkContext): void 
           // Selection changes stop firing at mouse release; the quiet window shows
           // one popup per drag instead of one per character.
           if (copied) {
-            notifyTerminalSelectionCopyFlash(pane.id)
+            notifyTerminalSelectionCopyFlash(pane.leafId)
           }
         })
         .catch(() => {})
