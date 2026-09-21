@@ -5,20 +5,23 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Terminal } from '@xterm/xterm'
 import { act, cleanup, render } from '@testing-library/react'
 import { TerminalCopyFeedbackPopup } from './TerminalCopyFeedbackPopup'
+import type { TerminalLeafId } from '../../../../shared/stable-pane-id'
 import {
   TERMINAL_COPY_FLASH_VISIBLE_MS,
   isTerminalCopyFlashVisible,
   notifyTerminalCopyFlash,
-  pruneTerminalCopyFlashPaneIds
+  pruneTerminalCopyFlashLeafIds
 } from './terminal-copy-flash-store'
+
+const LEAF_ID = '11111111-1111-4111-8111-111111111111' as TerminalLeafId
 
 function makeTerminal(green?: string): Pick<Terminal, 'options'> {
   return { options: { theme: green ? { green } : {} } }
 }
 
-function renderPopup(paneId: number, green?: string): HTMLElement {
+function renderPopup(leafId: TerminalLeafId, green?: string): HTMLElement {
   const { container } = render(
-    <TerminalCopyFeedbackPopup paneId={paneId} terminal={makeTerminal(green)} />
+    <TerminalCopyFeedbackPopup leafId={leafId} terminal={makeTerminal(green)} />
   )
   return container
 }
@@ -26,7 +29,7 @@ function renderPopup(paneId: number, green?: string): HTMLElement {
 describe('TerminalCopyFeedbackPopup', () => {
   beforeEach(() => {
     vi.useFakeTimers()
-    pruneTerminalCopyFlashPaneIds(new Set())
+    pruneTerminalCopyFlashLeafIds(new Set([LEAF_ID]))
   })
 
   afterEach(() => {
@@ -35,15 +38,15 @@ describe('TerminalCopyFeedbackPopup', () => {
   })
 
   it('renders nothing until a copy flash fires', () => {
-    const container = renderPopup(1, '#a9b665')
+    const container = renderPopup(LEAF_ID, '#a9b665')
     expect(container.querySelector('[aria-hidden="true"]')).toBeNull()
   })
 
   it('shows the herdr-style box anchored bottom-center while visible', () => {
-    const container = renderPopup(1, '#a9b665')
+    const container = renderPopup(LEAF_ID, '#a9b665')
 
     act(() => {
-      notifyTerminalCopyFlash(1)
+      notifyTerminalCopyFlash(LEAF_ID)
     })
 
     const overlay = container.querySelector('[aria-hidden="true"]')
@@ -55,10 +58,10 @@ describe('TerminalCopyFeedbackPopup', () => {
   })
 
   it('falls back to the status-success token when the theme has no green', () => {
-    const container = renderPopup(1)
+    const container = renderPopup(LEAF_ID)
 
     act(() => {
-      notifyTerminalCopyFlash(1)
+      notifyTerminalCopyFlash(LEAF_ID)
     })
 
     // jest-dom cannot resolve custom properties in happy-dom; assert the inline value.
@@ -67,11 +70,11 @@ describe('TerminalCopyFeedbackPopup', () => {
   })
 
   it('unmounts when the visible window elapses', () => {
-    const container = renderPopup(1, '#a9b665')
+    const container = renderPopup(LEAF_ID, '#a9b665')
     act(() => {
-      notifyTerminalCopyFlash(1)
+      notifyTerminalCopyFlash(LEAF_ID)
     })
-    expect(isTerminalCopyFlashVisible(1)).toBe(true)
+    expect(isTerminalCopyFlashVisible(LEAF_ID)).toBe(true)
 
     act(() => {
       vi.advanceTimersByTime(TERMINAL_COPY_FLASH_VISIBLE_MS)
