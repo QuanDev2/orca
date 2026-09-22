@@ -1,5 +1,6 @@
 // Route A web entry: mounts the phone's h/[hostId] route tree on react-native-web.
-// Dark: built by `build:mobile-web:app` into out/mobile-web-app, shipped by nothing until C1.
+// Built by `build:mobile-web` into the packaged bundle dir; mounted only by a build with
+// `EXPO_PUBLIC_MOBILE_SHELL=ota`.
 import { useEffect, type PropsWithChildren } from 'react'
 import { createRoot } from 'react-dom/client'
 import { ExpoRoot } from 'expo-router'
@@ -91,7 +92,9 @@ bootstrapShellPage({
     publishPageStorage(
       session.storage,
       (key, value) => client.notifyStorageWrite(key, value),
-      session.host?.id ?? ''
+      session.host?.id ?? '',
+      session.route?.pathname ?? '',
+      session.storageOversize
     )
     createRoot(container).render(
       // Above `ExpoRoot`, not inside its wrapper: a route this bundle cannot resolve or import
