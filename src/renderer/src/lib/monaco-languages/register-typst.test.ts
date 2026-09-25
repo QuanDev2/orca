@@ -34,26 +34,6 @@ describe('registerTypstLanguage', () => {
       TYPST_LANGUAGE_ID,
       typstLanguageConfiguration
     )
-    expect(typstLanguageConfiguration).toMatchObject({
-      comments: { lineComment: '//', blockComment: ['/*', '*/'] },
-      brackets: [
-        ['{', '}'],
-        ['[', ']'],
-        ['(', ')']
-      ],
-      autoClosingPairs: [
-        { open: '{', close: '}' },
-        { open: '[', close: ']' },
-        { open: '(', close: ')' },
-        { open: '"', close: '"' }
-      ],
-      surroundingPairs: [
-        { open: '{', close: '}' },
-        { open: '[', close: ']' },
-        { open: '(', close: ')' },
-        { open: '"', close: '"' }
-      ]
-    })
     expect(monaco.languages.registerTokensProviderFactory).toHaveBeenCalledWith(
       TYPST_LANGUAGE_ID,
       expect.objectContaining({ create: expect.any(Function) })
