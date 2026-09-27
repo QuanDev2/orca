@@ -16,6 +16,7 @@ import {
 } from '@/lib/app-menu-selection-actions'
 import { isEditableTarget } from '@/lib/editable-target'
 import { copyTerminalSelection } from './terminal-selection-copy'
+import { notifyTerminalCopyFlash } from './terminal-copy-flash-store'
 import type { TerminalPaneCloseController } from './use-terminal-pane-close-actions'
 import {
   formatClipboardImagePasteError,
@@ -223,7 +224,13 @@ export function registerTerminalPanePasteListeners({
       void copyTerminalSelection({
         terminal: pane.terminal,
         writeClipboardText: window.api.ui.writeTerminalClipboardText
-      }).catch(() => undefined)
+      })
+        .then((copied) => {
+          if (copied) {
+            notifyTerminalCopyFlash(pane.leafId)
+          }
+        })
+        .catch(() => undefined)
       return
     }
     if (action === 'select-all') {
