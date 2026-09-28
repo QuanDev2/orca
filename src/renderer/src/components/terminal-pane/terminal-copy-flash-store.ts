@@ -49,6 +49,12 @@ function requestFlash(leafId: TerminalLeafId, mode: 'immediate' | 'after-drag-qu
     if (entry.quietTimer !== undefined) {
       window.clearTimeout(entry.quietTimer)
     }
+    // Why: a drag landing near the end of a visible popup must not blink it off
+    // before the quiet window re-shows it; hold it visible until show() restarts.
+    if (entry.hideTimer !== undefined) {
+      window.clearTimeout(entry.hideTimer)
+      entry.hideTimer = undefined
+    }
     entry.quietTimer = window.setTimeout(() => {
       entry.quietTimer = undefined
       show(entry)

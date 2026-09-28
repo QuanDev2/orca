@@ -5,7 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import type { Terminal } from '@xterm/xterm'
 import { act, cleanup, render } from '@testing-library/react'
 import { TerminalCopyFeedbackPopup } from './TerminalCopyFeedbackPopup'
-import type { TerminalLeafId } from '../../../../shared/stable-pane-id'
+import { isTerminalLeafId, type TerminalLeafId } from '../../../../shared/stable-pane-id'
 import {
   TERMINAL_COPY_FLASH_VISIBLE_MS,
   isTerminalCopyFlashVisible,
@@ -13,7 +13,14 @@ import {
   pruneTerminalCopyFlashLeafIds
 } from './terminal-copy-flash-store'
 
-const LEAF_ID = '11111111-1111-4111-8111-111111111111' as TerminalLeafId
+function leafId(value: string): TerminalLeafId {
+  if (!isTerminalLeafId(value)) {
+    throw new Error(`test leaf id must be a UUID: ${value}`)
+  }
+  return value
+}
+
+const LEAF_ID = leafId('11111111-1111-4111-8111-111111111111')
 
 function makeTerminal(green?: string): Pick<Terminal, 'options'> {
   return { options: { theme: green ? { green } : {} } }
@@ -65,7 +72,10 @@ describe('TerminalCopyFeedbackPopup', () => {
     })
 
     // jest-dom cannot resolve custom properties in happy-dom; assert the inline value.
-    const box = container.querySelector('[aria-hidden="true"]')!.firstElementChild as HTMLElement
+    const box = container.querySelector('[aria-hidden="true"]')?.firstElementChild
+    if (!(box instanceof HTMLElement)) {
+      throw new Error('popup box not rendered')
+    }
     expect(box.style.borderColor).toBe('var(--color-status-success)')
   })
 

@@ -31,6 +31,44 @@ describe('runTerminalCopy', () => {
     expect(focus).toHaveBeenCalledTimes(1)
   })
 
+  it('reports success only after the write resolves, and never for an empty selection', async () => {
+    const onSuccess = vi.fn()
+    const focus = vi.fn()
+
+    await runTerminalCopy({
+      selection: 'terminal text',
+      writeClipboardText: vi.fn().mockResolvedValue(undefined),
+      onSuccess,
+      focus
+    })
+    expect(onSuccess).toHaveBeenCalledTimes(1)
+
+    onSuccess.mockClear()
+    await runTerminalCopy({
+      selection: '',
+      writeClipboardText: vi.fn().mockResolvedValue(undefined),
+      onSuccess,
+      focus
+    })
+    expect(onSuccess).not.toHaveBeenCalled()
+  })
+
+  it('does not report success when the clipboard write rejects', async () => {
+    const onSuccess = vi.fn()
+    const focus = vi.fn()
+
+    await expect(
+      runTerminalCopy({
+        selection: 'terminal text',
+        writeClipboardText: vi.fn().mockRejectedValue(REJECTION),
+        onSuccess,
+        focus
+      })
+    ).resolves.toBeUndefined()
+    expect(onSuccess).not.toHaveBeenCalled()
+    expect(focus).toHaveBeenCalledTimes(1)
+  })
+
   it('skips the write but still refocuses when there is no selection', async () => {
     const focus = vi.fn()
     const writeClipboardText = vi.fn()

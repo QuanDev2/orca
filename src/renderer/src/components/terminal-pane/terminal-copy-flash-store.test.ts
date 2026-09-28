@@ -1,6 +1,6 @@
 // @vitest-environment happy-dom
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import type { TerminalLeafId } from '../../../../shared/stable-pane-id'
+import { isTerminalLeafId, type TerminalLeafId } from '../../../../shared/stable-pane-id'
 import {
   TERMINAL_COPY_FLASH_DRAG_QUIET_MS,
   TERMINAL_COPY_FLASH_VISIBLE_MS,
@@ -11,9 +11,16 @@ import {
   subscribeTerminalCopyFlash
 } from './terminal-copy-flash-store'
 
-const LEAF_ID = '11111111-1111-4111-8111-111111111111' as TerminalLeafId
-const OTHER_LEAF_ID = '22222222-2222-4222-8222-222222222222' as TerminalLeafId
-const THIRD_LEAF_ID = '33333333-3333-4333-8333-333333333333' as TerminalLeafId
+function leafId(value: string): TerminalLeafId {
+  if (!isTerminalLeafId(value)) {
+    throw new Error(`test leaf id must be a UUID: ${value}`)
+  }
+  return value
+}
+
+const LEAF_ID = leafId('11111111-1111-4111-8111-111111111111')
+const OTHER_LEAF_ID = leafId('22222222-2222-4222-8222-222222222222')
+const THIRD_LEAF_ID = leafId('33333333-3333-4333-8333-333333333333')
 
 describe('terminal copy flash store', () => {
   beforeEach(() => {
@@ -54,6 +61,22 @@ describe('terminal copy flash store', () => {
     vi.advanceTimersByTime(TERMINAL_COPY_FLASH_VISIBLE_MS - 100)
     expect(isTerminalCopyFlashVisible(LEAF_ID)).toBe(true)
     vi.advanceTimersByTime(100)
+    expect(isTerminalCopyFlashVisible(LEAF_ID)).toBe(false)
+  })
+
+  it('holds a visible popup through a drag-quiet window instead of blinking off', () => {
+    notifyTerminalCopyFlash(LEAF_ID)
+    vi.advanceTimersByTime(TERMINAL_COPY_FLASH_VISIBLE_MS - 100)
+    notifyTerminalSelectionCopyFlash(LEAF_ID)
+
+    // The old hide deadline passes while the quiet window is still pending.
+    vi.advanceTimersByTime(100)
+    expect(isTerminalCopyFlashVisible(LEAF_ID)).toBe(true)
+
+    vi.advanceTimersByTime(TERMINAL_COPY_FLASH_DRAG_QUIET_MS)
+    expect(isTerminalCopyFlashVisible(LEAF_ID)).toBe(true)
+
+    vi.advanceTimersByTime(TERMINAL_COPY_FLASH_VISIBLE_MS)
     expect(isTerminalCopyFlashVisible(LEAF_ID)).toBe(false)
   })
 
